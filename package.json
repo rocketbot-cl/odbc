@@ -73,8 +73,8 @@
       "group": "scripts",
       "linux": false,
       "windows": true,
-      "mac": true,
-      "docker": true
+      "mac": false,
+      "docker": false
     },
     {
       "en": {
