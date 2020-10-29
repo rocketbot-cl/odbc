@@ -118,7 +118,7 @@ if module == "execute_query":
         query = GetParams('query')
         result = GetParams('var_')
         params = GetParams('params')
-        cursor = conn.cursor()
+        cursor = odbc_mod.connection.cursor()
 
         if query.lower().startswith(('{call', '{ call')):
             params = tuple(params.split(","))
@@ -130,7 +130,7 @@ if module == "execute_query":
         if query.lower().startswith(('select', '{call', '{ call')):
             row = cursor.fetchone()
             if row:
-                print(row[0])
+                data = row[0]
                 # data = []
             # # print(query)
             # # data.append(columns)
@@ -141,9 +141,9 @@ if module == "execute_query":
             #         ob_.append(str(r) + "")
             #     data.append(ob_)
         else:
-            conn.commit()
+            odbc_mod.connection.commit()
             data = cursor.rowcount, 'registros afectados'
-        conn.commit()
+        odbc_mod.connection.commit()
         SetVar(result, data)
     except Exception as e:
         print("\x1B[" + "31;40mError\x1B[" + "0m")
