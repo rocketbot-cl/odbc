@@ -127,19 +127,23 @@ if module == "execute_query":
         else:
             cursor.execute(query)
 
-        if query.lower().startswith(('select', '{call', '{ call')):
-            row = cursor.fetchone()
-            if row:
-                data = row[0]
-                # data = []
-            # # print(query)
-            # # data.append(columns)
-            # for row in cursor.fetchall():
-            #     # print(row)
-            #     ob_ = []
-            #     for r in row:
-            #         ob_.append(str(r) + "")
-            #     data.append(ob_)
+        if query.lower().startswith('select') or query.lower().startswith('execute'):
+            data = []
+
+            # print(query)
+
+            columns = [column[0] for column in cursor.description]
+            # data.append(columns)
+
+            for row in cursor:
+                # print(row)
+                ob_ = {}
+                t = 0
+                for r in row:
+                    ob_[columns[t]] = str(r) + ""
+                    t = t + 1
+
+                data.append(ob_)
         else:
             odbc_mod.connection.commit()
             data = cursor.rowcount, 'registros afectados'
