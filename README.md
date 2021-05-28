@@ -7,6 +7,7 @@ Module to automate databases with odbc
     <li>List drivers</li>
     <li>Connect DB</li>
     <li>Execute query</li>
+    <li>Close connection</li>
 </ul>
 
 ![alt text](https://github.com/rocketbot-cl/odbc/blob/master/example/odbc.jpg)
