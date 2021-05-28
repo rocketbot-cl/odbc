@@ -153,3 +153,7 @@ if module == "execute_query":
         print("\x1B[" + "31;40mError\x1B[" + "0m")
         PrintException()
         raise e
+
+if module == 'closeConn':
+
+    odbc_mod.connection.close()
