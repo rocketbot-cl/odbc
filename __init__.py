@@ -148,6 +148,11 @@ try:
         connection.commit()
         SetVar(result, data)
 
+    if module == 'closeConn':
+        connection = mod_odbc_sessions[session]
+        connection.close()
+    
+
 except Exception as e:
     print("\x1B[" + "31;40mError\x1B[" + "0m")
     PrintException("error")
