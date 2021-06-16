@@ -1,66 +1,80 @@
 # coding: utf-8
 """
-Base para desarrollo de modulos externos.
-Para obtener el modulo/Función que se esta llamando:
-     GetParams("module")
+Base for development of external modules.
 
-Para obtener las variables enviadas desde formulario/comando Rocketbot:
-    var = GetParams(variable)
-    Las "variable" se define en forms del archivo package.json
+To get the data sent by the robot this function is used:
+    GetParams()
 
-Para modificar la variable de Rocketbot:
-    SetVar(Variable_Rocketbot, "dato")
+To get the module or function that is being called:
+    GetParams("module")
 
-Para obtener una variable de Rocketbot:
+To get variable sent from Rocketbot command or form:
+    var = GetParams("id")
+    The "id" are defined in forms of the package.json file
+
+To modify a Rocketbot variable:
+    SetVar("name", "dato")
+
+To get a Rocketbot variable:
     var = GetVar(Variable_Rocketbot)
 
-Para obtener la Opcion seleccionada:
+To get selected option:
     opcion = GetParams("option")
 
-
-Para instalar librerias se debe ingresar por terminal a la carpeta "libs"
-    
-    pip install <package> -t .
+To install libraries you must enter the module folder by terminal.
+    pip install <package> -t .\libs 
 
 """
+
+# Python libraries
 import os
 import sys
 
+# Add the libs folder to the system path
 base_path = tmp_global_obj["basepath"]
 cur_path = base_path + 'modules' + os.sep + 'odbc' + os.sep + 'libs' + os.sep
-sys.path.append(cur_path)
+if cur_path not in sys.path:
+    sys.path.append(cur_path)
+
+# Import external libraries
 import pyodbc
 
-global odbc_mod
-
-"""
-    Obtengo el modulo que fueron invocados
-"""
-module = GetParams("module")
-
-"""
-    Automate Android devices
+""" 
+The code of each module works as a local scope. Each command that is executed resets the data. 
+To share information between commands, declare the variable as global. The sintax will be 'mod_modulename' or similar
 """
 
+global mod_odbc_sessions
 
-class OdbcModule:
-    def __init__(self, parameters, odbc):
-        self.pyodbc = odbc
-        self.connection = parameters
-
-    @property
-    def connection(self):
-        return self.__connection
-
-    @connection.setter
-    def connection(self, value):
-        self.__connection = self.pyodbc.connect(**value)
+"""
+To connect to multiple databases, a dictionary is created and stores the instance of each connection. 
+The syntax is {"session name": {data}}
+"""
+SESSION_DEFAULT = "default"
+try:
+    if not mod_odbc_sessions :
+        mod_odbc_sessions = {SESSION_DEFAULT:{}}
+except NameError:
+    mod_odbc_sessions = {SESSION_DEFAULT:{}}
 
 
-if module == "listDrivers":
-    result = GetParams('result')
-    filter_ = GetParams('filter')
-    try:
+# Get data from robot
+module = GetParams("module") # Get command executed
+session = GetParams("session") # Get Session name
+if not session:
+    session = SESSION_DEFAULT
+
+try:
+    if module == "get_drivers":
+
+        SetVar("obdc_drivers_module", {
+            "drivers": pyodbc.drivers()
+        })
+
+    if module == "listDrivers":
+        result = GetParams('result')
+        filter_ = GetParams('filter')
+
         drivers = []
         for driver in pyodbc.drivers():
             if bool(filter_):
@@ -70,55 +84,43 @@ if module == "listDrivers":
                 drivers.append(driver)
 
         SetVar(result, drivers)
-    except Exception as e:
-        print("\x1B[" + "31;40mError\x1B[" + "0m")
-        PrintException()
-        raise e
 
+    if module == "connect":
+        driver = GetParams('driver') # Compatibility with v1.1
+        params = GetParams("params") 
+        iframe = GetParams("iframe")
+        
+        if not driver:
+            driver = eval(iframe)["driver"]
 
-if module == "connect":
-    driver = GetParams('driver')
-    params = GetParams("params")
-
-    if driver not in pyodbc.drivers():
-        raise Exception(f"{driver} not exists in driver list")
-
-    try:
+        if driver not in pyodbc.drivers():
+            raise Exception(f"{driver} not exists in driver list")
 
         args = {"driver": driver}
-        if params.startswith("{"):
+
+        if params is None:
+            params = {}
+
+        elif params.startswith("{"):
             params = eval(params)
-            for key in params:
-                args[key] = params[key]
-        elif params is not None or params != "":
-            for param in params.split(";"):
-                key_value = param.split("=")
-                args[key_value[0]] = key_value[1]
+            
+        elif ";" in params:
+            params = {param.split("=")[0]: param.split("=")[1] for param in params.split(";")}
+            
+        args.update(params)
+        odbc_mod = pyodbc.connect(**args)
+        mod_odbc_sessions[session] = odbc_mod
+    
 
-        odbc_mod = OdbcModule(args, pyodbc)
-
-    except Exception as e:
-        print("\x1B[" + "31;40mError\x1B[" + "0m")
-        PrintException()
-        raise e
-
-if module == "execute_query":
-
-    def query2params(*args):
-        queries = []
-        print(args)
-        for param in args:
-            if param.startswith("to_date"):
-                p = datetime.strptime(date_, format_)
-                queries.append(p)
-            else:
-                queries.append(param)
-        return tuple(queries)
-    try:
+    if module == "execute_query":
+        from mod_odbc import query2params
+        
         query = GetParams('query')
         result = GetParams('var_')
         params = GetParams('params')
-        cursor = odbc_mod.connection.cursor()
+
+        connection = mod_odbc_sessions[session]
+        cursor = connection.cursor()
 
         if query.lower().startswith(('{call', '{ call')):
             params = tuple(params.split(","))
@@ -129,14 +131,9 @@ if module == "execute_query":
 
         if query.lower().startswith('select') or query.lower().startswith('execute'):
             data = []
-
-            # print(query)
-
             columns = [column[0] for column in cursor.description]
-            # data.append(columns)
 
             for row in cursor:
-                # print(row)
                 ob_ = {}
                 t = 0
                 for r in row:
@@ -145,11 +142,13 @@ if module == "execute_query":
 
                 data.append(ob_)
         else:
-            odbc_mod.connection.commit()
+            connection.commit()
             data = cursor.rowcount, 'registros afectados'
-        odbc_mod.connection.commit()
+
+        connection.commit()
         SetVar(result, data)
-    except Exception as e:
-        print("\x1B[" + "31;40mError\x1B[" + "0m")
-        PrintException()
-        raise e
+
+except Exception as e:
+    print("\x1B[" + "31;40mError\x1B[" + "0m")
+    PrintException("error")
+    raise e

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+</head>
+
+<body>
+    <div class="form-group">
+        <!-- <label>Select the driver</label> -->
+        <select class="form-control" id="drivers" type="text"></select>
+    </div>
+    <!-- <div class="form-group">
+        <span class="table-add float-right mb-3 mr-2">
+            <button onclick="addRow()" class="btn btn-info btn-rounded btn-sm my-0">Add row</button>
+        </span>
+        <table class="table table-bordered table-striped text-center">
+            <thead>
+                <tr>
+                    <th class="text-center">Parameter</th>
+                    <th class="text-center">Value</th>
+                    <th class="text-center">Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+        
+            </tbody>
+        </table>
+    </div> -->
+
+    
+    <script>
+        const newTr = `
+<tr class="hide">
+  <td class="pt-3-half" contenteditable="true"></td>
+  <td class="pt-3-half" contenteditable="true"></td>
+  <td>
+    <span class="table-remove"
+      ><button
+        type="button"
+        class="btn btn-danger btn-rounded btn-sm my-0 waves-effect waves-light"
+      >
+        Remove
+      </button></span
+    >
+  </td>
+</tr>
+`;
+    function addRow(){
+        table = document.querySelector("body > div:nth-child(2) > table > tbody")
+        tr = table.insertRow(-1)
+        tr.innerHTML = newTr
+        document.odbc_table = table.innerHTML
+    }
+    </script>
+    <script>
+        function addOptions(drivers) {
+            var select = document.getElementById("drivers")
+            for (driver of drivers) {
+                var opt = document.createElement('option');
+                opt.value = driver;
+                opt.innerHTML = driver;
+                select.appendChild(opt);
+                if (driver.toLowerCase() == document.driver_odbc) {
+                    opt.selected = true
+                }
+            }
+            
+        }
+        let api = document.URL.split("module")[0]
+        var formData = new FormData()
+        let command_ = {
+            "project": {
+                "profile": {
+                    "name": "odbc_module",
+                    "description": "",
+                    "version": "2020.12.30"
+                },
+                "vars": [
+                    {
+                        "name": "obdc_drivers_module",
+                        "data": "",
+                        "type": "string",
+                        "collapse": true,
+                        "$$hashKey": "object:1204"
+                    }
+                ],
+                "commands": [
+                    {
+                        "father": "module",
+                        "command": "{\"module_name\":\"odbc\",\"module\":\"get_drivers\"}",
+                        "option": "",
+                        "var": "",
+                        "index": 0,
+                        "group": "scripts",
+                        "execute": 0,
+                        "if": "",
+                        "children": [],
+                        "else": [],
+                        "id": "50ad1403-a6d8-d1da-c654-77eba1a4830a",
+                        "mode_live": true,
+                        "getvar": "",
+                        "extra_data": null,
+                        "screenshot": "",
+                        "execute_debbug": 0,
+                        "img": ""
+                    }
+                ],
+                "ifs": []
+            }
+        }
+
+        formData.append('info', JSON.stringify(command_))
+        formData.append('db', "")
+        fetch(api + "execute", {
+            method: "POST",
+            body: formData,
+        }).then(res => res.json())
+            .catch(error => console.error('Error:', error))
+            .then(response => {
+                var data = response.vars[0].data
+                data = eval('(' + data + ')')
+                language = data["language"]
+                drivers = data["drivers"]
+                addOptions(drivers)
+            });
+    </script>
+    <script>
+        var message = {
+            type: 'iframe',
+            commands: {}
+        }
+        var SendMessage = function () {
+            parent.postMessage(message, "*");
+        }
+        $('#drivers').on('change', function (e) {
+            message.commands['driver'] = $(this).val();
+            SendMessage();
+        })
+        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+        var eventer = window[eventMethod];
+        var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+        
+        // Listen to message from child window
+        eventer(messageEvent, function (e) {
+            console.log('parent received message!:  ', e.data);
+
+            if (e.data && e.data.driver) {
+                document.driver_odbc = e.data.driver.toLowerCase()
+            }
+        });
+    </script>
+</body>
+
+</html>
