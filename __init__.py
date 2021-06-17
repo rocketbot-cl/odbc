@@ -66,8 +66,9 @@ if not session:
 
 try:
     if module == "get_drivers":
-
-        SetVar("obdc_drivers_module", {
+        var_name = GetParams("var_name")
+        print(var_name)
+        SetVar(var_name, {
             "drivers": pyodbc.drivers()
         })
 
@@ -129,7 +130,7 @@ try:
         else:
             cursor.execute(query)
 
-        if query.lower().startswith('select') or query.lower().startswith('execute'):
+        if query.lower().startswith(('select','execute', '{call')):
             data = []
             columns = [column[0] for column in cursor.description]
 
