@@ -92,15 +92,17 @@
         "style": "width:1000px;",
         "inputs": [
           {
-            "type": "html",
-            "title": {
-              "es": "Seleccione el driver",
-              "en": "Select driver"
+            "type": "input",
+            "placeholder": {
+              "es": "ODBC Driver 17 for SQL Server",
+              "en": "ODBC Driver 17 for SQL Server"
             },
-            "src": "index.html",
-            "id": "html",
-            "css": "col-md-12",
-            "style": "height:50px;"
+            "title": {
+              "es": "Driver",
+              "en": "Driver:"
+            },
+            "id": "driver",
+            "css": "col-md-12"
           },
           {
             "type": "input",
