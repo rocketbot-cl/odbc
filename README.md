@@ -2,6 +2,10 @@
 
 Module to automate databases with odbc
 
+**For versions lower than 2020.06 or with browser locks, download from here and follow the description
+
+<a href="https://github.com/rocketbot-cl/odbc/releases/tag/4.9">Version 4.9</a>
+
 ## Commands
 <ul class="commands_readme">
     <li>List drivers</li>
