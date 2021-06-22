@@ -123,8 +123,9 @@ try:
         connection = mod_odbc_sessions[session]
         cursor = connection.cursor()
 
-        if query.lower().startswith(('{call', '{ call')):
+        if query.lower().startswith(('{call', '{ call')) and params:
             params = tuple(params.split(","))
+            query_params = query2params(*params)
             q = (query, ) + query2params(*params)
             cursor.execute(*q)
         else:
