@@ -2,7 +2,7 @@ def query2params(*args):
     queries = []
     print(args)
     for param in args:
-        if param.startswith("to_date"):
+        if str(param).startswith("to_date"):
             p = datetime.strptime(date_, format_)
             queries.append(p)
         else:

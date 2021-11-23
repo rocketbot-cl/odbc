@@ -22,7 +22,7 @@ To get selected option:
     opcion = GetParams("option")
 
 To install libraries you must enter the module folder by terminal.
-    pip install <package> -t .\libs 
+    pip install <package> -t .\libs
 
 """
 
@@ -39,15 +39,15 @@ if cur_path not in sys.path:
 # Import external libraries
 import pyodbc
 
-""" 
-The code of each module works as a local scope. Each command that is executed resets the data. 
+"""
+The code of each module works as a local scope. Each command that is executed resets the data.
 To share information between commands, declare the variable as global. The sintax will be 'mod_modulename' or similar
 """
 
 global mod_odbc_sessions
 
 """
-To connect to multiple databases, a dictionary is created and stores the instance of each connection. 
+To connect to multiple databases, a dictionary is created and stores the instance of each connection.
 The syntax is {"session name": {data}}
 """
 SESSION_DEFAULT = "default"
@@ -88,9 +88,9 @@ try:
 
     if module == "connect":
         driver = GetParams('driver') # Compatibility with v1.1
-        params = GetParams("params") 
+        params = GetParams("params")
         iframe = GetParams("iframe")
-        
+
         if not driver:
             driver = eval(iframe)["driver"]
 
@@ -104,18 +104,18 @@ try:
 
         elif params.startswith("{"):
             params = eval(params)
-            
+
         elif ";" in params:
             params = {param.split("=")[0]: param.split("=")[1] for param in params.split(";")}
-            
+
         args.update(params)
         odbc_mod = pyodbc.connect(**args)
         mod_odbc_sessions[session] = odbc_mod
-    
+
 
     if module == "execute_query":
         from mod_odbc import query2params
-        
+
         query = GetParams('query')
         result = GetParams('var_')
         params = GetParams('params')
@@ -123,8 +123,14 @@ try:
         connection = mod_odbc_sessions[session]
         cursor = connection.cursor()
 
-        if query.lower().startswith(('{call', '{ call')):
+        if params and params.startswith('['):
+            params = tuple(eval(params))
+        elif params:
             params = tuple(params.split(","))
+
+        if query.lower().startswith(('{call', '{ call')) and params:
+            # params = tuple(params.split(","))
+            query_params = query2params(*params)
             q = (query, ) + query2params(*params)
             cursor.execute(*q)
         else:
@@ -152,7 +158,7 @@ try:
     if module == 'closeConn':
         connection = mod_odbc_sessions[session]
         connection.close()
-    
+
 
 except Exception as e:
     print("\x1B[" + "31;40mError\x1B[" + "0m")
