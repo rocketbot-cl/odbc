@@ -135,19 +135,20 @@ try:
             cursor.execute(*q)
         else:
             cursor.execute(query)
+            
+        data = []
+        if query.lower().startswith(('select','execute', '{call')) and cursor.description:
+            
+                columns = [column[0] for column in cursor.description]
 
-        if query.lower().startswith(('select','execute', '{call')):
-            data = []
-            columns = [column[0] for column in cursor.description]
+                for row in cursor:
+                    ob_ = {}
+                    t = 0
+                    for r in row:
+                        ob_[columns[t]] = str(r) + ""
+                        t = t + 1
 
-            for row in cursor:
-                ob_ = {}
-                t = 0
-                for r in row:
-                    ob_[columns[t]] = str(r) + ""
-                    t = t + 1
-
-                data.append(ob_)
+                    data.append(ob_)
         else:
             connection.commit()
             data = cursor.rowcount, 'registros afectados'
