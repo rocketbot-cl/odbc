@@ -43,6 +43,10 @@
               "es": "Filter",
               "en": "Filter:"
             },
+            "description": {
+                "es": "Palabra para aplciar el filtro",
+                "en": "Word to apply in the filter"
+            },
             "id": "filter",
             "css": "col-md-12"
           },
@@ -55,6 +59,10 @@
             "title": {
               "es": "Asignar resultado a variable",
               "en": "Assign result to variable: "
+            },
+            "description": {
+                "es": "Variable donde guardar el resultado.",
+                "en": "Variable where to store the result."
             },
             "help": {
               "es": "Nombre de variable sin llaves {}",
@@ -112,6 +120,10 @@
               "es": "Parámetros:",
               "en": "Parameters:"
             },
+            "description": {
+                "es": "Datos para la conexión.",
+                "en": "Data necessary for the connection."
+            },
             "id": "params",
             "css": "col-md-12"
           }
@@ -152,6 +164,10 @@
               "es": "Query",
               "en": "Query:"
             },
+            "description": {
+                "es": "Query que se desea ejecutar.",
+                "en": "Query you want to execute."
+            },
             "id": "query",
             "css": "col-md-12"
           },
@@ -165,6 +181,10 @@
               "es": "Parametros",
               "en": "Params:"
             },
+            "description": {
+                "es": "Parametros necesarios, si es que son requeridos.",
+                "en": "Params, if they are necessary."
+            },
             "id": "params",
             "css": "col-md-12"
           },
@@ -177,6 +197,10 @@
             "title": {
               "es": "Asignar resultado a variable",
               "en": "Assign result to variable: "
+            },
+            "description": {
+                "es": "Variable donde guardar el resultado.",
+                "en": "Variable where to store the result."
             },
             "help": {
               "es": "Nombre de variable sin llaves {}",
