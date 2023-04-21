@@ -1,14 +1,19 @@
 {
   "author": "Danilo Toro - Nicolás Liendro",
-  "description": "Connect multiple database with odbc",
+  "description": "Connect multiple database with odbc | Conectate a multiple bases de datos con odbc",
+  "description_lang":{
+    "en": "Use Open DataBase Connectivity to connect to and manage your database system.",
+    "es": "Utiliza Open DataBase Connectivity para conectarte y gestionar tu sistema de bases de datos.",
+    "pr": "Use o Open DataBase Connectivity para conectar e gerenciar seu sistema de banco de dados."
+  },
   "disclaimer": "THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.",
-  "version": "4.2.0",
+  "version": "5.2.0",
   "license": "MIT",
-  "homepage": "http://rocketbot.co",
+  "homepage": "http://rocketbot.com",
   "linux": false,
   "windows": true,
-  "mac": true,
-  "docker": true,
+  "mac": false,
+  "docker": false,
   "name": "odbc",
   "dependencies": {
     "pyodbc": "4.0.30"
