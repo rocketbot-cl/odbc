@@ -102,7 +102,7 @@
       },
       "form": {
         "css": "modal-lg",
-        "style": "width:1000px;",
+        "style": "width:100px;",
         "inputs": [
           {
             "type": "html",
@@ -113,7 +113,7 @@
             "src": "index.html",
             "id": "html",
             "css": "col-md-12",
-            "style": "height:50px;"
+            "style": "height:5px;"
           },
           {
             "type": "input",
