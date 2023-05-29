@@ -1,3 +1,5 @@
+from datetime import datetime
+
 def query2params(*args):
     queries = []
     print(args)

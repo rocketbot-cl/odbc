@@ -32,9 +32,16 @@ import sys
 
 # Add the libs folder to the system path
 base_path = tmp_global_obj["basepath"]
-cur_path = base_path + 'modules' + os.sep + 'odbc' + os.sep + 'libs' + os.sep
-if cur_path not in sys.path:
-    sys.path.append(cur_path)
+cur_path = os.path.join(base_path, 'modules', 'odbc', 'libs')
+
+cur_path_x64 = os.path.join(cur_path, 'Windows' + os.sep +  'x64' + os.sep)
+cur_path_x86 = os.path.join(cur_path, 'Windows' + os.sep +  'x86' + os.sep)
+
+if sys.maxsize > 2**32 and cur_path_x64 not in sys.path:
+        sys.path.append(cur_path_x64)
+if sys.maxsize > 32 and cur_path_x86 not in sys.path:
+        sys.path.append(cur_path_x86)
+
 
 # Import external libraries
 import pyodbc
